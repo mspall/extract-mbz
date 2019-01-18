@@ -129,7 +129,7 @@ def unzip_mbz_file(mbz_filepath):
 	# Older version of mbz files are zip files
 	# Newer versions are gzip tar files
 	# Figure out what file type we have an unzip appropriately
-	
+
 	fileinfo = magic.from_file(mbz_filepath)
 
 	if 'Zip archive data' in fileinfo:
@@ -140,11 +140,11 @@ def unzip_mbz_file(mbz_filepath):
 		tar = tarfile.open(mbz_filepath)
 		tar.extractall(path=fullpath_to_unzip_dir)
 		tar.close()
-		
+
 	else:
 		print "Can't figure out what type of archive file this is"
 		return -1
-	
+
 	return fullpath_to_unzip_dir
 
 
@@ -296,13 +296,13 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
 	for item in section_sequence:
 		# Look for this item in the Moodle backup file
 		item_xpath = ".//*[moduleid='%s']" % item
-		
+
 		try:
 			item_title = activities.find(item_xpath).find("title").text  # default
 			modulename = activities.find(item_xpath).find("modulename").text
 		except:
 			continue
-	
+
 
 		print "Found %s (item #: %s) titled %s" % (modulename, item, item_title)
 
