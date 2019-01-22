@@ -186,7 +186,7 @@ if not os.path.exists(os.path.join(source,  'moodle_backup.xml')):
     print "\nERROR: " + source + " does not appear to contain unzipped mbz contents (couldn't locate moodle_backup.xml)\n"
     sys.exit()
 
-pattern     = re.compile('^\s*(.+\.(?:pdf|png|gif|jpg|jpeg|zip|rtf|sav|mp3|mht|por|xlsx?|docx?|pptx?))\s*$', flags=re.IGNORECASE)
+pattern = re.compile('^\s*(.+\.(?:pdf|png|gif|jpg|jpeg|zip|rtf|sav|mp3|mht|por|xlsx?|docx?|pptx?))\s*$', flags=re.IGNORECASE)
 
 # Get Course Info
 courseTree = etree.parse(os.path.join(source, 'course', 'course.xml'))
@@ -195,7 +195,7 @@ fullname = courseTree.getroot().find('fullname').text
 crn = courseTree.getroot().find('idnumber').text
 format = courseTree.getroot().find('format').text
 
-destinationRoot      = os.path.join(unicode(source), slugify(unicode(shortname)))
+destinationRoot = os.path.join(unicode(source), slugify(unicode(shortname)))
 createOutputDirectories(destinationRoot)
 
 # Copy HTML support files to extracted folder
