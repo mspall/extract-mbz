@@ -43,17 +43,16 @@ import tarfile
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+
 # Functions ###########################################################################
 # locate # # # #
 def locate(pattern, root=os.curdir):
     '''Locate all files matching supplied filename pattern in and below
     supplied root directory.'''
-
-
-
     for path, dirs, files in os.walk(os.path.abspath(root)):
         for filename in fnmatch.filter(files, pattern):
             yield os.path.join(path, filename)
+
 
 # createOutputDirectories # # # #
 def createOutputDirectories(destinationRoot):
@@ -84,6 +83,7 @@ def initializeLogfile(logfileName):
     else:
         print ("Error: unable to open {0} for writing".format(logFileSpec))
 
+
 # Unique filename
 # From http://code.activestate.com/recipes/577200-make-unique-file-name/
 # By Denis Barmenkov <denis.barmenkov@gmail.com>
@@ -110,9 +110,9 @@ def make_slugified_filename(filename):
     name, ext = os.path.splitext(filename)
     return os.path.join(path, "%s%s" % (slugify(unicode(name)), ext))
 
+
 # Unzip the mbz file and extract the contents
 def unzip_mbz_file(mbz_filepath):
-
     # Make folder to contain contentes of unzipped mbz file
     base_dir = os.path.dirname(mbz_filepath)
     mbz_filename, extension = os.path.splitext(os.path.basename(mbz_filepath))
@@ -135,20 +135,15 @@ def unzip_mbz_file(mbz_filepath):
     if 'Zip archive data' in fileinfo:
         with zipfile.ZipFile(mbz_filepath, 'r') as myzip:
             myzip.extractall(fullpath_to_unzip_dir)
-
     elif 'gzip compressed data' in fileinfo:
         tar = tarfile.open(mbz_filepath)
         tar.extractall(path=fullpath_to_unzip_dir)
         tar.close()
-
     else:
         print "Can't figure out what type of archive file this is"
         return -1
 
     return fullpath_to_unzip_dir
-
-
-
 
 
 # /Functions ###########################################################################
@@ -191,10 +186,6 @@ if not os.path.exists(os.path.join(source,  'moodle_backup.xml')):
     print "\nERROR: " + source + " does not appear to contain unzipped mbz contents (couldn't locate moodle_backup.xml)\n"
     sys.exit()
 
-
-
-
-
 pattern     = re.compile('^\s*(.+\.(?:pdf|png|gif|jpg|jpeg|zip|rtf|sav|mp3|mht|por|xlsx?|docx?|pptx?))\s*$', flags=re.IGNORECASE)
 
 # Get Course Info
@@ -211,7 +202,6 @@ createOutputDirectories(destinationRoot)
 script_dir = os.path.dirname(os.path.realpath(__file__))
 shutil.copy(os.path.join(script_dir, "tachyons.css"),destinationRoot)
 
-
 # Get Moodle backup file info
 backupTree = etree.parse(os.path.join(source, 'moodle_backup.xml'))
 backupTreeRoot = backupTree.getroot()
@@ -225,7 +215,6 @@ print "Extracting backup of "+shortname+ " @ " + timeStamp + " to " + destinatio
 
 initializeLogfile("extract_log.txt")
 
-
 html_header = '''
 <head>
     <title>Moodle Backup Extract</title>
@@ -233,16 +222,10 @@ html_header = '''
     <link rel="stylesheet" type="text/css" href="tachyons.css">
 </head>'''
 
-
-
-
-
-
 ##########################
 # Process each section
 webFilename = "%s.html" % slugify(unicode(shortname))
 webFileSpec = os.path.join(destinationRoot, webFilename)
-
 
 urlfile = open(webFileSpec,"w")
 if urlfile.mode == 'w':
@@ -259,7 +242,6 @@ print "===\nProcessing course sections..."
 itemCount = 0
 
 for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("section"):
-
     section_title = s.find("title").text
     print "\nNow processing section id: %s (%s)" % (s.find("sectionid").text, section_title)
 
@@ -270,9 +252,7 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
         else:
             section_title = "Section %s" % section_title
 
-
     HTMLOutput = "<h2 class='mbn'>%s</h2>" % section_title
-
 
     # Open section file
     section_file_root = etree.parse(os.path.join(source, s.find("directory").text, "section.xml"))
@@ -282,7 +262,6 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
         HTMLOutput += "<p>%s</p>" % section_summary.encode("utf-8", errors='ignore')
     HTMLOutput += "<ul class='man'>"
 
-
     if section_file_root.find("sequence").text:
         section_sequence = section_file_root.find("sequence").text.split(',')
     else:
@@ -290,8 +269,6 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
 
     # Folder path for section (if needed)
     section_file_dir = os.path.join(destinationRoot, "section_%03d" % itemCount)
-
-
 
     for item in section_sequence:
         # Look for this item in the Moodle backup file
@@ -302,7 +279,6 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
             modulename = activities.find(item_xpath).find("modulename").text
         except:
             continue
-
 
         print "Found %s (item #: %s) titled %s" % (modulename, item, item_title)
 
@@ -318,7 +294,6 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
                 filename = files.find("file[@id='%s']/filename" % file_id).text
 
                 if filename != "." and filename != "":
-
                     # Copy the file to a folder for this section
                     if not os.path.exists(section_file_dir):
                         os.makedirs(section_file_dir)
@@ -334,8 +309,6 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
 
                     file_url = "./section_%03d/%s" % (itemCount, filename)
                     item_title = "<a href='%s'>%s</a>" % (file_url, item_title)
-
-
 
         elif modulename == "url":
             # Get url link
@@ -397,7 +370,6 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
                 original_filename = files.find("file[@id='%s']/filename" % file_id).text
 
                 if original_filename != "." and original_filename != "":
-
                     # Copy the file to a folder for this section
                     if not os.path.exists(section_file_dir):
                         os.makedirs(section_file_dir)
@@ -415,20 +387,15 @@ for s in backupTreeRoot.findall("./information/contents/sections")[0].findall("s
             folder_html += "</ul></div>"
             item_title = "%s (folder)%s" % (folder_title, folder_html)
 
-
-
         else:
             item_title += " (%s)" % modulename
-
 
         #item_path = activities.find(item_xpath).find("directory").text
         HTMLOutput += "<li>%s</li>" % item_title.encode("utf-8", errors='ignore')
 
-
     logOutput = section_title + nl
     HTMLOutput += "</ul>"
     HTMLOutput = HTMLOutput.encode('utf-8', errors='ignore')
-
 
     urlfile.write(HTMLOutput)
     logfile.write(logOutput)
@@ -441,9 +408,6 @@ if itemCount == 0:
 logfile.write ("Extracted sections = {0}".format(itemCount))
 
 urlfile.close()
-
-
-
 
 # # #########################
 # Process Course Files
@@ -507,8 +471,6 @@ for rsrc in root:
 
 print ("Extracted files = {0}".format(itemCount))
 logfile.write ("\nExtracted files = {0}\n".format(itemCount))
-
-
 
 urlfile.close()
 logfile.close()
