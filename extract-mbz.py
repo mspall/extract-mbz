@@ -55,7 +55,7 @@ def locate(pattern, root=os.curdir):
 
 
 # createOutputDirectories # # # #
-def createOutputDirectories(destinationRoot):
+def createOutputDirectories(sourceDir, destinationRoot):
     # create output subdirectories
     if os.path.exists(destinationRoot):
         print "\n$$$$ Directory " + sourceDir + " (" + destinationRoot + ") already exists! Overwriting existing files\n"
@@ -196,7 +196,7 @@ crn = courseTree.getroot().find('idnumber').text
 format = courseTree.getroot().find('format').text
 
 destinationRoot = os.path.join(unicode(source), slugify(unicode(shortname)))
-createOutputDirectories(destinationRoot)
+createOutputDirectories(source, destinationRoot)
 
 # Copy HTML support files to extracted folder
 script_dir = os.path.dirname(os.path.realpath(__file__))
